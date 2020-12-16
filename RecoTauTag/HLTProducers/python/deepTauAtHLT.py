@@ -67,13 +67,13 @@ def update(process):
     process.hpsPFTauBasicDiscriminators = pfRecoTauDiscriminationByIsolation.clone(
         PFTauProducer = 'hltHpsPFTauProducerReg',
         Prediscriminants = cms.PSet(  BooleanOperator = cms.string( "and" ) ),
-        deltaBetaPUTrackPtCutOverride     = True, # Set the boolean = True to override.
-        deltaBetaPUTrackPtCutOverride_val = 0.5,  # Set the value for new value.
+        # deltaBetaPUTrackPtCutOverride     = True, # Set the boolean = True to override.
+        # deltaBetaPUTrackPtCutOverride_val = 0.5,  # Set the value for new value.
         particleFlowSrc = 'hltParticleFlowReg',
         vertexSrc = PFTauQualityCuts.primaryVertexSrc,
         customOuterCone = PFRecoTauPFJetInputs.isolationConeSize,
         isoConeSizeForDeltaBeta = 0.8,
-        deltaBetaFactor = "%0.4f"%(ak4dBetaCorrection),
+        # deltaBetaFactor = "%0.4f"%(ak4dBetaCorrection),
         qualityCuts = dict(isolationQualityCuts = dict(minTrackHits = 3, minGammaEt = 1.0, minTrackPt = 0.5)),
         IDdefinitions = [
             cms.PSet(
@@ -94,6 +94,7 @@ def update(process):
             ),
             cms.PSet(
                 IDname = cms.string("TauFootprintCorrection"),
+                applyDeltaBetaCorrection = cms.bool(True),  
                 storeRawFootprintCorrection = cms.bool(True)
             ),
             cms.PSet(
@@ -267,7 +268,9 @@ def update(process):
         is_online = cms.bool(True),
         basicTauDiscriminators = 'hpsPFTauBasicDiscriminators',
         basicTauDiscriminatorsdR03 = 'hpsPFTauBasicDiscriminatorsdR03',
-        Prediscriminants = requireDecayMode.clone(),  
+        Prediscriminants = cms.PSet(  BooleanOperator = cms.string( "and" ) ),
+        # Prediscriminants = requireDecayMode.clone(),  
+        debug_level = 0,
         VSeWP = working_points,
         VSmuWP = working_points,
         VSjetWP = working_points     
@@ -295,6 +298,12 @@ def update(process):
 
 
     # Add DeepTauProducer
-    process.HLTHPSMediumChargedIsoPFTauSequenceReg += (process.hpsPFTauPrimaryVertexProducer  + process.hpsPFTauSecondaryVertexProducer + process.hpsPFTauTransverseImpactParameters + process.hltFixedGridRhoFastjetAll + process.hpsPFTauAbsoluteChargedIsolationDiscriminator + process.hpsPFTauRelativeChargedIsolationDiscriminator + process.hpsPFTauBasicDiscriminators + process.hpsPFTauBasicDiscriminatorsdR03 + process.deepTauProducer)
+    process.HLTHPSDoublePFTauPt35Eta2p1Trk1Reg += (process.hpsPFTauPrimaryVertexProducer  + process.hpsPFTauSecondaryVertexProducer + process.hpsPFTauTransverseImpactParameters + process.hltFixedGridRhoFastjetAll + process.hpsPFTauAbsoluteChargedIsolationDiscriminator + process.hpsPFTauRelativeChargedIsolationDiscriminator + process.hpsPFTauBasicDiscriminators + process.hpsPFTauBasicDiscriminatorsdR03 + process.deepTauProducer)
+    # process.HLT_DoubleMediumChargedIsoPFTauHPS35_Trk1_eta2p1_Reg_v4.remove(process.hltHpsSelectedPFTausTrackPt1MediumChargedIsolationReg)
+    # process.HLT_DoubleMediumChargedIsoPFTauHPS35_Trk1_eta2p1_Reg_v4.remove(process.hltHpsDoublePFTau35TrackPt1MediumChargedIsolationReg)
+    # process.HLT_DoubleMediumChargedIsoPFTauHPS35_Trk1_eta2p1_Reg_v4.remove(process.hltHpsL1JetsHLTDoublePFTauTrackPt1MediumChargedIsolationMatchReg)
+    # process.HLT_DoubleMediumChargedIsoPFTauHPS35_Trk1_eta2p1_Reg_v4.remove(process.hltHpsDoublePFTau35TrackPt1MediumChargedIsolationL1HLTMatchedReg)
+    # process.HLT_DoubleMediumChargedIsoPFTauHPS35_Trk1_eta2p1_Reg_v4.remove(process.hltHpsDoublePFTau35TrackPt1MediumChargedIsolationDz02Reg)
+
 
     return process
