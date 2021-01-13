@@ -630,9 +630,21 @@ namespace {
     auto getTauDxy(const pat::PackedCandidate& cand, float default_value) { return cand.dxy(); }
     auto getPvAssocationQuality(const reco::PFCandidate& cand) { return 0.7013f; }
     auto getPvAssocationQuality(const pat::PackedCandidate& cand) { return cand.pvAssociationQuality(); }
-    auto getPuppiWeight(const reco::PFCandidate& cand) { return 0.9907f; }
+    auto getPuppiWeight(const reco::PFCandidate& cand) { 
+      if (std::abs(cand.pdgId()) == 11) return 0.9787f;
+      else if (std::abs(cand.pdgId()) == 13) return .9907f;
+      else if (std::abs(cand.pdgId()) == 22) return .9084f;
+      else if (std::abs(cand.pdgId()) == 211) return 0.7614f; 
+      else if (std::abs(cand.pdgId()) == 130) return 0.9798f; 
+      else return 0.f;
+    }    
     auto getPuppiWeight(const pat::PackedCandidate& cand) { return cand.puppiWeight(); }
-    auto getPuppiWeightNoLep(const reco::PFCandidate& cand) { return 0.8858f; }
+    auto getPuppiWeightNoLep(const reco::PFCandidate& cand) { 
+      if (std::abs(cand.pdgId()) == 211) return 0.7614f; 
+      else if (std::abs(cand.pdgId()) == 130) return .9047f;  
+      else if (std::abs(cand.pdgId()) == 22) return .8858f;  
+      else return 0.f;   
+    }
     auto getPuppiWeightNoLep(const pat::PackedCandidate& cand) { return cand.puppiWeightNoLep(); }
     auto getLostInnerHits(const reco::PFCandidate& cand, float default_value) {
       return cand.bestTrack() != nullptr
@@ -1547,6 +1559,8 @@ private:
                 << "invalid prediction = " << pred << " for tau_index = " << tau_index << ", pred_index = " << k;
           predictions.matrix<float>()(tau_index, k) = pred;
         }
+      } else {
+        continue;
       }
     }
     return predictions;
@@ -2005,9 +2019,9 @@ private:
           getValueLinear<int>(candFunc::getPvAssocationQuality(ele_cand), 0, 7, true);
       get(dnn::pfCand_ele_puppiWeight) = getValue(candFunc::getPuppiWeight(ele_cand));
       get(dnn::pfCand_ele_charge) = getValue(ele_cand.charge());
-      get(dnn::pfCand_ele_lostInnerHits) = getValue<int>(candFunc::getLostInnerHits(ele_cand, default_value));
+      get(dnn::pfCand_ele_lostInnerHits) = getValue<int>(candFunc::getLostInnerHits(ele_cand, 0));
       get(dnn::pfCand_ele_numberOfPixelHits) =
-          getValueLinear(candFunc::getNumberOfPixelHits(ele_cand, default_value), 0, 10, true);
+          getValueLinear(candFunc::getNumberOfPixelHits(ele_cand, 0), 0, 10, true);
       get(dnn::pfCand_ele_vertex_dx) =
           getValueNorm(pfCands.at(index_pf_ele).vertex().x() - pv.position().x(), 0.f, 0.1221f);
       get(dnn::pfCand_ele_vertex_dy) =
@@ -2066,9 +2080,9 @@ private:
       get(dnn::pfCand_gamma_fromPV) = getValueLinear<int>(candFunc::getFromPV(gamma_cand), 0, 3, true);
       get(dnn::pfCand_gamma_puppiWeight) = getValue(candFunc::getPuppiWeight(gamma_cand));
       get(dnn::pfCand_gamma_puppiWeightNoLep) = getValue(candFunc::getPuppiWeightNoLep(gamma_cand));
-      get(dnn::pfCand_gamma_lostInnerHits) = getValue<int>(candFunc::getLostInnerHits(gamma_cand, default_value));
+      get(dnn::pfCand_gamma_lostInnerHits) = getValue<int>(candFunc::getLostInnerHits(gamma_cand, 0));
       get(dnn::pfCand_gamma_numberOfPixelHits) =
-          getValueLinear(candFunc::getNumberOfPixelHits(gamma_cand, default_value), 0, 7, true);
+          getValueLinear(candFunc::getNumberOfPixelHits(gamma_cand, 0), 0, 7, true);
       get(dnn::pfCand_gamma_vertex_dx) =
           getValueNorm(pfCands.at(index_pf_gamma).vertex().x() - pv.position().x(), 0.f, 0.0067f);
       get(dnn::pfCand_gamma_vertex_dy) =
@@ -2244,9 +2258,9 @@ private:
       get(dnn::pfCand_muon_fromPV) = getValueLinear<int>(candFunc::getFromPV(muon_cand), 0, 3, true);
       get(dnn::pfCand_muon_puppiWeight) = getValue(candFunc::getPuppiWeight(muon_cand));
       get(dnn::pfCand_muon_charge) = getValue(muon_cand.charge());
-      get(dnn::pfCand_muon_lostInnerHits) = getValue<int>(candFunc::getLostInnerHits(muon_cand, default_value));
+      get(dnn::pfCand_muon_lostInnerHits) = getValue<int>(candFunc::getLostInnerHits(muon_cand, 0));
       get(dnn::pfCand_muon_numberOfPixelHits) =
-          getValueLinear(candFunc::getNumberOfPixelHits(muon_cand, default_value), 0, 11, true);
+          getValueLinear(candFunc::getNumberOfPixelHits(muon_cand, 0), 0, 11, true);
       get(dnn::pfCand_muon_vertex_dx) =
           getValueNorm(pfCands.at(index_pf_muon).vertex().x() - pv.position().x(), -0.0007f, 0.6869f);
       get(dnn::pfCand_muon_vertex_dy) =
@@ -2398,9 +2412,9 @@ private:
       get(dnn::pfCand_chHad_puppiWeight) = getValue(candFunc::getPuppiWeight(chH_cand));
       get(dnn::pfCand_chHad_puppiWeightNoLep) = getValue(candFunc::getPuppiWeightNoLep(chH_cand));
       get(dnn::pfCand_chHad_charge) = getValue(chH_cand.charge());
-      get(dnn::pfCand_chHad_lostInnerHits) = getValue<int>(candFunc::getLostInnerHits(chH_cand, default_value));
+      get(dnn::pfCand_chHad_lostInnerHits) = getValue<int>(candFunc::getLostInnerHits(chH_cand, 0));
       get(dnn::pfCand_chHad_numberOfPixelHits) =
-          getValueLinear(candFunc::getNumberOfPixelHits(chH_cand, default_value), 0, 12, true);
+          getValueLinear(candFunc::getNumberOfPixelHits(chH_cand, 0), 0, 12, true);
       get(dnn::pfCand_chHad_vertex_dx) =
           getValueNorm(pfCands.at(index_chH).vertex().x() - pv.position().x(), 0.0005f, 1.735f);
       get(dnn::pfCand_chHad_vertex_dy) =
