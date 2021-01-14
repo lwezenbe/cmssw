@@ -630,20 +630,34 @@ namespace {
     auto getTauDxy(const pat::PackedCandidate& cand, float default_value) { return cand.dxy(); }
     auto getPvAssocationQuality(const reco::PFCandidate& cand) { return 0.7013f; }
     auto getPvAssocationQuality(const pat::PackedCandidate& cand) { return cand.pvAssociationQuality(); }
-    auto getPuppiWeight(const reco::PFCandidate& cand) { 
-      if (std::abs(cand.pdgId()) == 11) return 0.9787f;
-      else if (std::abs(cand.pdgId()) == 13) return .9907f;
-      else if (std::abs(cand.pdgId()) == 22) return .9084f;
-      else if (std::abs(cand.pdgId()) == 211) return 0.7614f; 
-      else if (std::abs(cand.pdgId()) == 130) return 0.9798f; 
-      else return 0.f;
-    }    
+    auto getPuppiWeight(const reco::PFCandidate& cand) {
+      switch (std::abs(cand.pdgId())) {
+        case 11:
+          return 0.9787f;
+        case 13:
+          return .9907f;
+        case 22:
+          return .9084f;
+        case 211:
+          return 0.7614f;
+        case 130:
+          return 0.9798f;
+        default:
+          return 0.f;
+      }
+    }
     auto getPuppiWeight(const pat::PackedCandidate& cand) { return cand.puppiWeight(); }
-    auto getPuppiWeightNoLep(const reco::PFCandidate& cand) { 
-      if (std::abs(cand.pdgId()) == 211) return 0.7614f; 
-      else if (std::abs(cand.pdgId()) == 130) return .9047f;  
-      else if (std::abs(cand.pdgId()) == 22) return .8858f;  
-      else return 0.f;   
+    auto getPuppiWeightNoLep(const reco::PFCandidate& cand) {
+      switch (std::abs(cand.pdgId())) {
+        case 211:
+          return 0.7614f;
+        case 130:
+          return .9047f;
+        case 22:
+          return .8858f;
+        default:
+          return 0.f;
+      }
     }
     auto getPuppiWeightNoLep(const pat::PackedCandidate& cand) { return cand.puppiWeightNoLep(); }
     auto getLostInnerHits(const reco::PFCandidate& cand, float default_value) {
@@ -1559,8 +1573,6 @@ private:
                 << "invalid prediction = " << pred << " for tau_index = " << tau_index << ", pred_index = " << k;
           predictions.matrix<float>()(tau_index, k) = pred;
         }
-      } else {
-        continue;
       }
     }
     return predictions;
@@ -2020,8 +2032,7 @@ private:
       get(dnn::pfCand_ele_puppiWeight) = getValue(candFunc::getPuppiWeight(ele_cand));
       get(dnn::pfCand_ele_charge) = getValue(ele_cand.charge());
       get(dnn::pfCand_ele_lostInnerHits) = getValue<int>(candFunc::getLostInnerHits(ele_cand, 0));
-      get(dnn::pfCand_ele_numberOfPixelHits) =
-          getValueLinear(candFunc::getNumberOfPixelHits(ele_cand, 0), 0, 10, true);
+      get(dnn::pfCand_ele_numberOfPixelHits) = getValueLinear(candFunc::getNumberOfPixelHits(ele_cand, 0), 0, 10, true);
       get(dnn::pfCand_ele_vertex_dx) =
           getValueNorm(pfCands.at(index_pf_ele).vertex().x() - pv.position().x(), 0.f, 0.1221f);
       get(dnn::pfCand_ele_vertex_dy) =
