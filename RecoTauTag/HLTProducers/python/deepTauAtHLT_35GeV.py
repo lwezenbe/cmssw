@@ -35,7 +35,7 @@ def update(process):
     )
 
     ## Cut based isolations dR=0.5
-    process.hpsPFTauBasicDiscriminators = pfRecoTauDiscriminationByIsolation.clone(
+    process.hpsPFTauBasicDiscriminatorsForDeepTau = pfRecoTauDiscriminationByIsolation.clone(
         PFTauProducer = 'hltHpsPFTauProducerReg',
         Prediscriminants = cms.PSet(  BooleanOperator = cms.string( "and" ) ),
         deltaBetaPUTrackPtCutOverride     = True, # Set the boolean = True to override.
@@ -80,11 +80,11 @@ def update(process):
     )
 
     ## Cut based isolations dR=0.3
-    process.hpsPFTauBasicDiscriminatorsdR03 = process.hpsPFTauBasicDiscriminators.clone(
+    process.hpsPFTauBasicDiscriminatorsdR03ForDeepTau = process.hpsPFTauBasicDiscriminatorsForDeepTau.clone(
         customOuterCone = 0.3
     )
 
-    process.hpsPFTauPrimaryVertexProducer = PFTauPrimaryVertexProducer.clone(
+    process.hpsPFTauPrimaryVertexProducerForDeepTau = PFTauPrimaryVertexProducer.clone(
         PFTauTag = "hltHpsPFTauProducerReg",
         ElectronTag = "hltEgammaCandidates",
         MuonTag = "hltMuonsReg",
@@ -100,13 +100,13 @@ def update(process):
         qualityCuts = PFTauQualityCuts
     )
 
-    process.hpsPFTauSecondaryVertexProducer = PFTauSecondaryVertexProducer.clone(
+    process.hpsPFTauSecondaryVertexProducerForDeepTau = PFTauSecondaryVertexProducer.clone(
         PFTauTag = "hltHpsPFTauProducerReg"
     )
-    process.hpsPFTauTransverseImpactParameters = PFTauTransverseImpactParameters.clone(
+    process.hpsPFTauTransverseImpactParametersForDeepTau = PFTauTransverseImpactParameters.clone(
         PFTauTag = "hltHpsPFTauProducerReg",
-        PFTauPVATag = "hpsPFTauPrimaryVertexProducer",
-        PFTauSVATag = "hpsPFTauSecondaryVertexProducer",
+        PFTauPVATag = "hpsPFTauPrimaryVertexProducerForDeepTau",
+        PFTauSVATag = "hpsPFTauSecondaryVertexProducerForDeepTau",
         useFullCalculation = True
     )
 
@@ -168,8 +168,9 @@ def update(process):
         graph_file = file_names,
         disable_dxy_pca = cms.bool(True),
         is_online = cms.bool(True),
-        basicTauDiscriminators = 'hpsPFTauBasicDiscriminators',
-        basicTauDiscriminatorsdR03 = 'hpsPFTauBasicDiscriminatorsdR03',
+        basicTauDiscriminators = 'hpsPFTauBasicDiscriminatorsForDeepTau',
+        basicTauDiscriminatorsdR03 = 'hpsPFTauBasicDiscriminatorsdR03ForDeepTau',
+        pfTauTransverseImpactParameters = 'hpsPFTauTransverseImpactParametersForDeepTau',
         Prediscriminants = cms.PSet(  BooleanOperator = cms.string( "and" ) ),  
         workingPoints = cms.vstring(['test']),
         rawValues = cms.vstring(['test']),
@@ -179,7 +180,7 @@ def update(process):
     )	
 
     # Add DeepTauProducer
-    process.HLTHPSDeepTau35IsoPFTauSequenceReg = cms.Sequence(process.hpsPFTauPrimaryVertexProducer + process.hpsPFTauSecondaryVertexProducer + process.hpsPFTauTransverseImpactParameters + process.hltFixedGridRhoFastjetAllTau + process.hpsPFTauBasicDiscriminators + process.hpsPFTauBasicDiscriminatorsdR03 + process.hltHpsL1JetsHLTDoublePFTauTrackPt1MediumChargedIsolationMatchReg + process.deepTauProducer)
+    process.HLTHPSDeepTau35IsoPFTauSequenceReg = cms.Sequence(process.hpsPFTauPrimaryVertexProducerForDeepTau + process.hpsPFTauSecondaryVertexProducerForDeepTau + process.hpsPFTauTransverseImpactParametersForDeepTau + process.hltFixedGridRhoFastjetAllTau + process.hpsPFTauBasicDiscriminatorsForDeepTau + process.hpsPFTauBasicDiscriminatorsdR03ForDeepTau + process.hltHpsL1JetsHLTDoublePFTauTrackPt1MediumChargedIsolationMatchReg + process.deepTauProducer)
     process.hltHpsSelectedPFTausTrackPt1DeepTau35IsolationReg = process.hltHpsSelectedPFTausTrackPt1MediumChargedIsolationReg.clone(
         discriminators = [
             cms.PSet(  
